@@ -56,7 +56,7 @@
 ## 安装 & 升级
 - 【全新安装】请执行以下脚本：
 ```
-bash <(curl -Ls https://raw.githubusercontent.com/xeefei/3x-ui/master/install.sh)
+bash <(curl -Ls https://raw.githubusercontent.com/97668589/3x-ui/master/install.sh)
 ```
 - 若要对版本进行升级，可直接通过脚本选择【2】，如下图：
 ![8](./media/8.png)
@@ -67,10 +67,10 @@ bash <(curl -Ls https://raw.githubusercontent.com/xeefei/3x-ui/master/install.sh
 
 ## 安装指定版本
 
-要安装所需的版本，请将该版本添加到安装命令的末尾。 e.g., ver `v2.3.0.1`:
+要安装所需的版本，请将该版本添加到安装命令的末尾。 e.g., ver `v2.3.0.7`:
 
 ```
-bash <(curl -Ls https://raw.githubusercontent.com/xeefei/3x-ui/master/install.sh) v2.3.0.1
+bash <(curl -Ls https://raw.githubusercontent.com/97668589/3x-ui/master/install.sh) v2.3.0.7
 ```
 
 ## 安装完成之后请放行指定端口
@@ -139,7 +139,7 @@ case "${ARCH}" in
 esac
 
 
-wget https://github.com/xeefei/3x-ui/releases/latest/download/x-ui-linux-${XUI_ARCH}.tar.gz
+wget https://github.com/97668589/3x-ui/releases/latest/download/x-ui-linux-${XUI_ARCH}.tar.gz
 ```
 
 2. 下载压缩包后，执行以下命令安装或升级 x-ui：
@@ -187,7 +187,7 @@ systemctl restart x-ui
 2. 克隆仓库：
 
    ```sh
-   git clone https://github.com/xeefei/3x-ui.git
+   git clone https://github.com/97668589/3x-ui.git
    cd 3x-ui
    ```
 
@@ -525,7 +525,3 @@ XUI_BIN_FOLDER="bin" XUI_DB_FOLDER="/etc/x-ui" go build main.go
 
 - [Iran v2ray rules](https://github.com/chocolate4u/Iran-v2ray-rules) (License: **GPL-3.0**): _Enhanced v2ray/xray and v2ray/xray-clients routing rules with built-in Iranian domains and a focus on security and adblocking._
 - [Vietnam Adblock rules](https://github.com/vuong2023/vn-v2ray-rules) (License: **GPL-3.0**): _A hosted domain hosted in Vietnam and blocklist with the most efficiency for Vietnamese._
-
-## Star 趋势
-
-[![Stargazers over time](https://starchart.cc/xeefei/3x-ui.svg)](https://starchart.cc/xeefei/3x-ui)
