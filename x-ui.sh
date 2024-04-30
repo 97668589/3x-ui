@@ -556,10 +556,7 @@ show_xray_status() {
 }
 
 firewall_menu() {
-    echo -e "${green}\t1.${plain} 安装防火墙并开放端口"
-    echo -e "${green}\t2.${plain} 允许列表"
-    echo -e "${green}\t3.${plain} 从列表中删除端口"
-    echo -e "${green}\t4.${plain} 禁用防火墙"
+    echo -e "${green}\t1.${plain} 开放所有端口"
     echo -e "${green}\t0.${plain} 返回主菜单"
     read -p "请输入选项: " choice
     case "$choice" in
@@ -569,100 +566,24 @@ firewall_menu() {
     1)
         open_ports
         ;;
-    2)
-        sudo ufw status
-        ;;
-    3)
-        delete_ports
-        ;;
-    4)
-        sudo ufw disable
-        ;;
     *) echo "无效选项" ;;
     esac
 }
 
-open_ports() {
-    if ! command -v ufw &>/dev/null; then
-        echo "ufw 防火墙未安装，正在安装..."
-        apt-get update
-        apt-get install -y ufw
-    else
-        echo "ufw 防火墙已安装"
-    fi
-
-    # Check if the firewall is inactive
-    if ufw status | grep -q "Status: active"; then
-        echo "防火墙已经激活"
-    else
-        # Open the necessary ports
-        ufw allow ssh
-        ufw allow http
-        ufw allow https
-        ufw allow 2053/tcp
-
-        # Enable the firewall
-        ufw --force enable
-    fi
-
-    # Prompt the user to enter a list of ports
-    read -p "输入您要打开的端口（例如 80,443,2053 或端口范围 400-500): " ports
-
-    # Check if the input is valid
-    if ! [[ $ports =~ ^([0-9]+|[0-9]+-[0-9]+)(,([0-9]+|[0-9]+-[0-9]+))*$ ]]; then
-        echo "错误：输入无效。请输入以逗号分隔的端口列表或端口范围（例如 80,443,2053 或 400-500)" >&2
-        exit 1
-    fi
-
-    # Open the specified ports using ufw
-    IFS=',' read -ra PORT_LIST <<<"$ports"
-    for port in "${PORT_LIST[@]}"; do
-        if [[ $port == *-* ]]; then
-            # Split the range into start and end ports
-            start_port=$(echo $port | cut -d'-' -f1)
-            end_port=$(echo $port | cut -d'-' -f2)
-            # Loop through the range and open each port
-            for ((i = start_port; i <= end_port; i++)); do
-                ufw allow $i
-            done
-        else
-            ufw allow "$port"
-        fi
-    done
-
-    # Confirm that the ports are open
-    ufw status | grep $ports
-}
-
-delete_ports() {
-    # Prompt the user to enter the ports they want to delete
-    read -p "输入要删除的端口（例如 80,443,2053 或范围 400-500): " ports
-
-    # Check if the input is valid
-    if ! [[ $ports =~ ^([0-9]+|[0-9]+-[0-9]+)(,([0-9]+|[0-9]+-[0-9]+))*$ ]]; then
-        echo "错误：输入无效。请输入以逗号分隔的端口列表或端口范围（例如 80,443,2053 或 400-500)" >&2
-        exit 1
-    fi
-
-    # Delete the specified ports using ufw
-    IFS=',' read -ra PORT_LIST <<<"$ports"
-    for port in "${PORT_LIST[@]}"; do
-        if [[ $port == *-* ]]; then
-            # Split the range into start and end ports
-            start_port=$(echo $port | cut -d'-' -f1)
-            end_port=$(echo $port | cut -d'-' -f2)
-            # Loop through the range and delete each port
-            for ((i = start_port; i <= end_port; i++)); do
-                ufw delete allow $i
-            done
-        else
-            ufw delete allow "$port"
-        fi
-    done
-
-    # Confirm that the ports are deleted
-    echo "删除指定端口:"
-    ufw status | grep $ports
+open_ports(){
+    systemctl stop firewalld.service
+    systemctl disable firewalld.service
+    setenforce 0
+    ufw disable
+    iptables -P INPUT ACCEPT
+    iptables -P FORWARD ACCEPT
+    iptables -P OUTPUT ACCEPT
+    iptables -t nat -F
+    iptables -t mangle -F 
+    iptables -F
+    iptables -X
+    netfilter-persistent save
+    yellow "VPS中的所有网络端口已开启"
 }
 
 update_geo() {
